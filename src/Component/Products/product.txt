@@ -1,0 +1,193 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+import './Products.css';
+
+const Products = () => {
+  const [category, setCategory] = useState('');
+  const [productName, setProductName] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+  const [productDescription, setProductDescription] = useState('');
+  const [productImage, setProductImage] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
+
+  const handleProductNameChange = (e) => {
+    setProductName(e.target.value);
+  };
+
+  const handleProductPriceChange = (e) => {
+    setProductPrice(e.target.value);
+  };
+
+  const handleProductDescriptionChange = (e) => {
+    setProductDescription(e.target.value);
+  };
+
+  const handleProductImageChange = (e) => {
+    const file = e.target.files[0];
+    setProductImage(file);
+  };
+
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    if (!isEditing) {
+      const newProduct = {
+        category,
+        name: productName,
+        price: productPrice,
+        description: productDescription,
+        image: productImage,
+      };
+      try {
+        const response = await axios.post('/api/products', newProduct); // Adjust the endpoint as per your backend setup
+        setProducts([...products, response.data]);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      const updatedProduct = {
+        id: products[editIndex].id,
+        category,
+        name: productName,
+        price: productPrice,
+        description: productDescription,
+        image: productImage,
+      };
+      try {
+        await axios.put(`/api/products/${updatedProduct.id}`, updatedProduct); // Adjust the endpoint as per your backend setup
+        const updatedProducts = [...products];
+        updatedProducts[editIndex] = updatedProduct;
+        setProducts(updatedProducts);
+        setIsEditing(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    setCategory('');
+    setProductName('');
+    setProductPrice('');
+    setProductDescription('');
+    setProductImage(null);
+  };
+
+  const handleEditProduct = (index) => {
+    setIsEditing(true);
+    setEditIndex(index);
+    const productToEdit = products[index];
+    setCategory(productToEdit.category);
+    setProductName(productToEdit.name);
+    setProductPrice(productToEdit.price);
+    setProductDescription(productToEdit.description);
+    setProductImage(productToEdit.image);
+  };
+
+  const handleDeleteProduct = async (index) => {
+    const productId = products[index].id;
+    try {
+      await axios.delete(`/api/products/${productId}`); // Adjust the endpoint as per your backend setup
+      setProducts(products.filter((_, i) => i !== index));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="products-container">
+      <h2>Create Product</h2>
+      <form onSubmit={handleAddProduct}>
+        <label>
+          Category:
+          <select className="category-dropdown" value={category} onChange={handleCategoryChange}>
+            <option value="">Select Category</option>
+            <option value="lounges">Lounges</option>
+            <option value="tables">Tables</option>
+            <option value="chairs">Chairs</option>
+            <option value="bedroom">Bedroom Collection</option>
+            <option value="dining">Dining Collection</option>
+            <option value="storage">Storage</option>
+          </select>
+        </label>
+        <br />
+        <label>
+          Product Name:
+          <input
+            type="text"
+            value={productName}
+            onChange={handleProductNameChange}
+            className="product-input"
+          />
+        </label>
+        <label>
+          Price:
+          <input
+            type="text"
+            value={productPrice}
+            onChange={handleProductPriceChange}
+            className="product-input"
+          />
+        </label>
+        <br />
+        <label>
+          Description:
+          <textarea
+            value={productDescription}
+            onChange={handleProductDescriptionChange}
+            className="product-input"
+          />
+        </label>
+        <br />
+        <label>
+          Image:
+          <input type="file" onChange={handleProductImageChange} />
+        </label>
+        <br />
+        <button type="submit" className="submit-button">
+          {isEditing ? 'Update' : 'Add Product'}
+        </button>
+      </form>
+      <h2>Products List</h2>
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product, index) => (
+            <tr key={product.id}>
+              <td>{product.category}</td>
+              <td>{product.name}</td>
+              <td>{product.price}</td>
+              <td>{product.description}</td>
+              <td>
+                {product.image && (
+                  <img src={URL.createObjectURL(product.image)} alt={product.name} className="product-image" />
+                )}
+              </td>
+              <td>
+                <button className="edit-button" onClick={() => handleEditProduct(index)}>
+                  Edit
+                </button>
+                <button className="delete-button" onClick={() => handleDeleteProduct(index)}>
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default Products;

@@ -1,0 +1,17 @@
+.contain{
+  display: flex;
+}
+
+#main-content-container {
+  background: #e5e5e5;
+  padding: 2rem 3rem 3rem 4rem;
+  width: 90%;
+  height: 75vh;
+  overflow-y: auto;
+  flex: 5;
+  /* use media query to remove the padding on smaller devices when you hide the sidenav
+  example */
+  @media screen and (max-width: 765px) {
+    padding: 5rem;
+  }
+}

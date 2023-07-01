@@ -1,0 +1,54 @@
+/* Dashboard.css */
+
+.dashboard {
+    padding: 20px;
+  }
+  
+  .dashboard-cards {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .dashboard-card {
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .dashboard-card-title {
+    margin-top: 0;
+  }
+  
+  .dashboard-card-value {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .recent-orders {
+    margin-top: 20px;
+  }
+  
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .orders-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .orders-table td {
+    vertical-align: middle;
+  }
+  
