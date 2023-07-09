@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Products.css';
 
 const Products = () => {
@@ -10,6 +11,19 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('https://palletedecore.onrender.com/api/products');
+      setProducts(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -32,18 +46,23 @@ const Products = () => {
     setProductImage(file);
   };
 
-  const handleAddProduct = (e) => {
+  const handleAddProduct = async (e) => {
     e.preventDefault();
     if (!isEditing) {
       const newProduct = {
-        id: new Date().getTime(), // Unique ID
         category,
         name: productName,
         price: productPrice,
         description: productDescription,
         image: productImage,
       };
-      setProducts([...products, newProduct]);
+      try {
+        const response = await axios.post('https://palletedecore.onrender.com/api/products', newProduct);
+        // console.log('Product added:', response.data); 
+        setProducts([...products, response.data]);
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       const updatedProduct = {
         id: products[editIndex].id,
@@ -53,10 +72,15 @@ const Products = () => {
         description: productDescription,
         image: productImage,
       };
-      const updatedProducts = [...products];
-      updatedProducts[editIndex] = updatedProduct;
-      setProducts(updatedProducts);
-      setIsEditing(false);
+      try {
+        await axios.put(`https://palletedecore.onrender.com/api/products/${updatedProduct.id}`, updatedProduct);
+        const updatedProducts = [...products];
+        updatedProducts[editIndex] = updatedProduct;
+        setProducts(updatedProducts);
+        setIsEditing(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
     setCategory('');
     setProductName('');
@@ -76,8 +100,14 @@ const Products = () => {
     setProductImage(productToEdit.image);
   };
 
-  const handleDeleteProduct = (index) => {
-    setProducts(products.filter((_, i) => i !== index));
+  const handleDeleteProduct = async (index) => {
+    const productId = products[index].id;
+    try {
+      await axios.delete(`https://palletedecore.onrender.com/api/products/${productId}`);
+      setProducts(products.filter((_, i) => i !== index));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
