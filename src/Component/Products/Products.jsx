@@ -8,13 +8,24 @@ const Products = () => {
   const [productPrice, setProductPrice] = useState('');
   const [productDescription, setProductDescription] = useState('');
   const [productImage, setProductImage] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://localhost:7000/api/category/all-categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -58,7 +69,6 @@ const Products = () => {
       };
       try {
         const response = await axios.post('https://palletedecore.onrender.com/api/products', newProduct);
-        // console.log('Product added:', response.data); 
         setProducts([...products, response.data]);
       } catch (error) {
         console.error(error);
@@ -110,20 +120,49 @@ const Products = () => {
     }
   };
 
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    if (category.trim() === '') return;
+    try {
+      const newCategory = { name: category };
+      await axios.post('http://localhost:7000/api/category/add-category', newCategory);
+      setCategory('');
+      fetchCategories();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="products-container">
+      <h2>Create Category</h2>
+      <form onSubmit={handleAddCategory}>
+        <label>
+          Category Name:
+          <input
+            type="text"
+            value={category}
+            onChange={handleCategoryChange}
+            className="product-input"
+          />
+        </label>
+        <br />
+        <button type="submit" className="submit-button">
+          Add Category
+        </button>
+      </form>
+
       <h2>Create Product</h2>
       <form onSubmit={handleAddProduct}>
         <label>
           Category:
           <select className="category-dropdown" value={category} onChange={handleCategoryChange}>
             <option value="">Select Category</option>
-            <option value="lounges">Lounges</option>
-            <option value="tables">Tables</option>
-            <option value="chairs">Chairs</option>
-            <option value="bedroom">Bedroom Collection</option>
-            <option value="dining">Dining Collection</option>
-            <option value="storage">Storage</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
           </select>
         </label>
         <br />
