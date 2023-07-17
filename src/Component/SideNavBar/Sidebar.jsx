@@ -1,27 +1,36 @@
-// Sidebar.js
-
 import React from 'react';
-import './Sidebar.css'; // Import the external CSS file
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
+import './Sidebar.css';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+// Clear token from localStorage
+localStorage.removeItem('token');
+
+
+    // Redirect to AdminLogin component
+    navigate('/');
+  };
+
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
         <ul className="sidebar-list">
           <li>
-            <Link to={"/"} className="sidebar-link">Dashboard</Link>
+            <Link to="/dashboard" className="sidebar-link">Dashboard</Link>
           </li>
           <li>
-          <Link to={"/admin/products"} className="sidebar-link">Products</Link>
+            <Link to="/admin/products" className="sidebar-link">Products</Link>
           </li>
           <li>
-          <Link to={"/admin/orders"} className="sidebar-link">Orders</Link>
+            <Link to="/admin/orders" className="sidebar-link">Orders</Link>
           </li>
         </ul>
       </nav>
       <div className="sidebar-login">
-        <button className="sidebar-login-button">Login</button>
+        <button className="sidebar-login-button" onClick={handleLogout}>Logout</button>
       </div>
     </aside>
   );

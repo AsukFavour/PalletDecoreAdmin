@@ -1,46 +1,47 @@
-import './App.css'
+import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import TopNavBar from './Component/TopNavBar/TopNavBar';
-import Sidebar from './Component/SideNavBar/Sidebar';
-import Dashboard from './Component/Dashboard/Dashboard';
-import Layout from './Component/Layout/Layout';
-import Products from './Component/Products/Products';
-import Order from './Component/Orders/Order';
-
-
-
-
+import TopNavBar from "./Component/TopNavBar/TopNavBar";
+import Sidebar from "./Component/SideNavBar/Sidebar";
+import Dashboard from "./Component/Dashboard/Dashboard";
+import Layout from "./Component/Layout/Layout";
+import Products from "./Component/Products/Products";
+import Order from "./Component/Orders/Order";
+import AdminLogin from "./Component/AdminLogin/AdminLogin";
 
 function App() {
-
   return (
-   <Router>
-    <Routes>
-      <Route path='/' element={
-        <Layout>
-          <Dashboard/>
-        </Layout>
-      }/>
+    <Router>
+      <Routes>
+        <Route
+          path="/dashboard"
+          element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          }
+        />
 
-<Route
+        <Route path="/" element={<AdminLogin />} />
+
+        <Route
           path="/admin/products"
           element={
             <Layout>
-             <Products/>
+              <Products />
             </Layout>
           }
-          />
-          <Route
+        />
+        <Route
           path="/admin/orders"
           element={
             <Layout>
-             <Order/>
+              <Order />
             </Layout>
           }
-          />
-    </Routes>
-   </Router>
-  )
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

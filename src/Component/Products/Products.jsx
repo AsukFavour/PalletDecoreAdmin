@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Products.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Products = () => {
   const [category, setCategory] = useState('');
@@ -20,7 +23,7 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:7000/api/category/all-categories');
+      const response = await axios.get('https://palletedecore.onrender.com/api/category/all-categories');
       setCategories(response.data);
     } catch (error) {
       console.error(error);
@@ -123,15 +126,30 @@ const Products = () => {
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (category.trim() === '') return;
+  
     try {
+      const token = localStorage.getItem('adminToken');
+      const config = {
+        headers: {
+          Authorization:`Bearer ${token}` ,
+        },
+      };
+  
       const newCategory = { name: category };
-      await axios.post('http://localhost:7000/api/category/add-category', newCategory);
+      const response = await axios.post('https://palletedecore.onrender.com/api/category/add-category', newCategory, config);
+
+    
       setCategory('');
-      fetchCategories();
-    } catch (error) {
-      console.error(error);
-    }
+      setCategories([...categories, response.data]);
+      toast.success('Category added successfully.'); // Display success message as toast notification
+    
+    
+  } catch (error) {
+    console.error('Error:', error.message);
+    console.log(error.response?.data);
+  }
   };
+  
 
   return (
     <div className="products-container">
@@ -239,6 +257,7 @@ const Products = () => {
           ))}
         </tbody>
       </table>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
